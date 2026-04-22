@@ -351,13 +351,66 @@
       background: #1b4b71;
       color: #f0fbff;
     }
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .product {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f2238;
+      padding: 8px;
+      display: grid;
+      gap: 8px;
+    }
+    .product-image {
+      height: 120px;
+      border-radius: 8px;
+      border: 1px solid #365f83;
+      background:
+        radial-gradient(circle at 35% 35%, rgba(123, 226, 255, 0.48), transparent 45%),
+        linear-gradient(180deg, #1b3e5f, #10283f);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d9efff;
+      font-size: 46px;
+    }
+    .product h5 { font-size: 15px; }
+    .product-meta {
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .product-price {
+      font-size: 17px;
+      font-weight: 700;
+      color: #b9f7da;
+    }
+    .cart-box {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #10263d;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
 
     @media (max-width: 960px) {
       .main { grid-template-columns: 1fr; }
       .extras { grid-template-columns: 1fr 1fr; }
+      .shop-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 700px) {
-      .metrics, .btns, .modes, .hud, .extras, .form-grid, .bottom-nav { grid-template-columns: 1fr; }
+      .metrics, .btns, .modes, .hud, .extras, .form-grid, .bottom-nav, .shop-grid { grid-template-columns: 1fr; }
       .header { flex-direction: column; align-items: flex-start; }
     }
   </style>
@@ -534,6 +587,33 @@
       <div class="line"><span class="muted">Oylik prognoz</span><strong id="salesForecast">0 so'm</strong></div>
       <div class="line"><span class="muted">1 kWh narxi</span><strong>1200 so'm</strong></div>
       <div class="line"><span class="muted">Amalga oshgan savdo</span><strong id="salesEnergy">0.0 kWh</strong></div>
+      <div class="shop-grid">
+        <article class="product">
+          <div class="product-image">⚙</div>
+          <h5>Mini Gidra S1</h5>
+          <div class="product-meta"><span>Turi: Standart</span><span>2.5 kW</span></div>
+          <div class="product-price">50 000 so'm</div>
+          <button class="primary add-cart-btn" data-name="Mini Gidra S1" data-price="50000">Savatchaga qo'shish</button>
+        </article>
+        <article class="product">
+          <div class="product-image">🔩</div>
+          <h5>Mini Gidra Pro X</h5>
+          <div class="product-meta"><span>Turi: Professional</span><span>4.0 kW</span></div>
+          <div class="product-price">85 000 so'm</div>
+          <button class="primary add-cart-btn" data-name="Mini Gidra Pro X" data-price="85000">Savatchaga qo'shish</button>
+        </article>
+        <article class="product">
+          <div class="product-image">💧</div>
+          <h5>Mini Gidra Eco</h5>
+          <div class="product-meta"><span>Turi: Tejamkor</span><span>1.8 kW</span></div>
+          <div class="product-price">120 000 so'm</div>
+          <button class="primary add-cart-btn" data-name="Mini Gidra Eco" data-price="120000">Savatchaga qo'shish</button>
+        </article>
+      </div>
+      <div class="cart-box">
+        <span>Savatcha: <strong id="cartCount">0 ta mahsulot</strong></span>
+        <span>Jami: <strong id="cartTotal">0 so'm</strong></span>
+      </div>
       <p class="page-note">Sotuv qiymatlari joriy energiya asosida avtomatik yangilanadi.</p>
     </section>
 
@@ -590,6 +670,9 @@
     const salesToday = document.getElementById("salesToday");
     const salesForecast = document.getElementById("salesForecast");
     const salesEnergy = document.getElementById("salesEnergy");
+    const addCartButtons = document.querySelectorAll(".add-cart-btn");
+    const cartCount = document.getElementById("cartCount");
+    const cartTotal = document.getElementById("cartTotal");
 
     const state = {
       running: true,
@@ -614,6 +697,10 @@
     const tariffPerKwh = 1200;
     const baselinePowerKw = 12;
     const tickHours = 0.7 / 3600;
+    const cart = {
+      count: 0,
+      total: 0
+    };
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0d2238);
@@ -779,6 +866,10 @@
       primeBtn.disabled = locked;
       nightBtn.disabled = locked;
     }
+    function updateCartUi() {
+      cartCount.textContent = cart.count + " ta mahsulot";
+      cartTotal.textContent = Math.round(cart.total).toLocaleString("uz-UZ") + " so'm";
+    }
 
     function computeStep() {
       if (!state.running) {
@@ -924,6 +1015,16 @@
         navItems.forEach((btn) => btn.classList.toggle("active", btn === item));
       });
     });
+    addCartButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const name = btn.dataset.name;
+        const price = Number(btn.dataset.price);
+        cart.count += 1;
+        cart.total += price;
+        updateCartUi();
+        setAlarm(name + " savatchaga qo'shildi.", "ok");
+      });
+    });
 
     function tick() {
       computeStep();
@@ -934,7 +1035,8 @@
 
     setInterval(tick, 700);
     setAlarm("Tizim avtomatik rejimda ishga tushdi.", "ok");
-    tick();
+    updateCartUi();
+git     tick();
   </script>
 </body>
 </html>
