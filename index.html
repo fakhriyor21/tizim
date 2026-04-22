@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Gidra - Aqlli Veb Platforma</title>
+  <style>
+    :root {
+      --bg: #0a1a2d;
+      --panel: #122842;
+      --line: #2f567a;
+      --line-soft: #3e678d;
+      --text: #eaf4ff;
+      --muted: #9bb7d4;
+      --ok: #36cf8d;
+      --warn: #f3b04c;
+      --err: #ff647a;
+      --accent: #5fc8ff;
+      --tariff: 1200;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 18% 10%, rgba(95, 200, 255, 0.15), transparent 40%),
+        radial-gradient(circle at 84% 12%, rgba(54, 207, 141, 0.1), transparent 34%),
+        #0a1a2d;
+      color: var(--text);
+      padding: 12px;
+    }
+    .wrap { width: min(1200px, 100%); margin: 0 auto; }
+    .header, .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 8px 22px rgba(3, 9, 17, 0.35);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+    .title { font-size: clamp(18px, 2.5vw, 28px); font-weight: 700; }
+    .sub { color: var(--muted); font-size: 13px; margin-top: 3px; }
+    .lamp { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #5f7080; }
+
+    .main {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 10px;
+    }
+    .card { padding: 12px; }
+    .card:hover {
+      border-color: var(--line-soft);
+      transition: border-color 0.2s ease;
+    }
+    h3 { font-size: 18px; margin-bottom: 10px; }
+    .scene-box {
+      position: relative;
+      height: 300px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 50% 48%, rgba(69, 154, 204, 0.22), transparent 50%),
+        linear-gradient(180deg, #1d2f44, #13283d);
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    #scene3d { position: absolute; inset: 0; }
+    .hud {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 8px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      z-index: 3;
+    }
+    .pill {
+      background: rgba(10, 26, 45, 0.8);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .pill strong { display: block; color: var(--text); margin-top: 2px; }
+    .hint {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      z-index: 3;
+      background: rgba(10, 26, 45, 0.78);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 5px 8px;
+    }
+    .scene-overlay-top {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      z-index: 3;
+      border: 1px solid #355a7d;
+      border-radius: 8px;
+      background: rgba(9, 22, 37, 0.62);
+      color: #cbe4fb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      padding: 6px 8px;
+    }
+    .scene-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+    }
+    .scene-title i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #64d6ff;
+      box-shadow: 0 0 8px #64d6ff;
+    }
+    .scene-bottom {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 54px;
+      z-index: 3;
+      color: #d6ebff;
+      font-size: 12px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: end;
+      pointer-events: none;
+    }
+    .scene-bottom strong {
+      display: block;
+      color: #f4fbff;
+      margin-top: 2px;
+      font-size: 23px;
+      line-height: 1;
+    }
+    .scene-bottom .right { text-align: right; }
+    .scene-mid { text-align: center; padding-bottom: 6px; }
+    .scene-slider {
+      width: 120px;
+      height: 4px;
+      border-radius: 999px;
+      background: #325775;
+      border: 1px solid #42698d;
+      margin: 0 auto 6px;
+      position: relative;
+    }
+    .scene-slider::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--scene-level, 50%);
+      border-radius: 999px;
+      background: #7be2ff;
+      box-shadow: 0 0 8px rgba(123, 226, 255, 0.75);
+    }
+    .scene-slider::after {
+      content: "";
+      position: absolute;
+      left: var(--scene-level, 50%);
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 7px rgba(255, 255, 255, 0.8);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+      background: linear-gradient(180deg, #122842, #0f2238);
+    }
+    .metric span { color: var(--muted); font-size: 12px; }
+    .metric strong { display: block; font-size: 34px; line-height: 1.1; margin-top: 4px; }
+
+    .controls { display: grid; gap: 10px; }
+    .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+    .label { color: var(--muted); font-size: 13px; }
+    .val { min-width: 70px; text-align: right; font-weight: 700; }
+    input[type="range"] { width: 100%; accent-color: var(--accent); }
+    .btns, .modes { display: grid; gap: 8px; }
+    .btns { grid-template-columns: 1fr 1fr; }
+    .modes { grid-template-columns: 1fr 1fr 1fr; }
+    button {
+      background: #193a5c;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+      transition: transform 0.14s ease, filter 0.16s ease, border-color 0.16s ease;
+    }
+    button:hover { transform: translateY(-1px); filter: brightness(1.08); border-color: #4e7da8; }
+    button:active { transform: translateY(0); filter: brightness(0.98); }
+    button.primary { background: #1f5fa1; }
+    button.warn { background: #75501f; }
+    button.danger { background: #6e2c39; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .alarm {
+      min-height: 38px;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      padding: 9px;
+      font-size: 13px;
+      color: var(--muted);
+      background: #0f2238;
+    }
+    .alarm.ok { color: #afeed0; }
+    .alarm.warn { color: #ffd596; }
+    .alarm.err { color: #ffc3cd; }
+
+    .trend { margin-top: 10px; }
+    .trend canvas {
+      width: 100%;
+      height: 170px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0d2238;
+    }
+    .legend {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .chip i {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .extras {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .extras .card h4 { margin-bottom: 8px; }
+    .line {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid #244767;
+      font-size: 13px;
+    }
+    .line:last-child { border-bottom: 0; }
+    .muted { color: var(--muted); }
+    .page { display: none; }
+    .page.active { display: block; }
+    .page.card { margin-top: 10px; }
+    .section-title {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .field {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px;
+      background: #0f2238;
+      display: grid;
+      gap: 6px;
+    }
+    .field label { color: var(--muted); font-size: 12px; }
+    .field input, .field select {
+      width: 100%;
+      border-radius: 7px;
+      border: 1px solid #365f83;
+      background: #10283f;
+      color: var(--text);
+      padding: 8px;
+      font-size: 13px;
+    }
+    .page-note {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .bottom-nav {
+      position: sticky;
+      bottom: 10px;
+      z-index: 20;
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      background: rgba(9, 22, 37, 0.92);
+      backdrop-filter: blur(6px);
+      border-radius: 12px;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      box-shadow: 0 10px 30px rgba(2, 8, 16, 0.55);
+    }
+    .nav-item {
+      border: 1px solid #355d80;
+      border-radius: 9px;
+      background: #132d47;
+      color: #b8d9f7;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 0.16s ease, background 0.16s ease, color 0.16s ease;
+    }
+    .nav-item.active {
+      border-color: #63cbff;
+      background: #1b4b71;
+      color: #f0fbff;
+    }
+
+    @media (max-width: 960px) {
+      .main { grid-template-columns: 1fr; }
+      .extras { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 700px) {
+      .metrics, .btns, .modes, .hud, .extras, .form-grid, .bottom-nav { grid-template-columns: 1fr; }
+      .header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="header">
+      <div>
+        <div class="title">Mini Gidra - Aqlli Boshqaruv Paneli</div>
+          <div class="sub">Soddalashtirilgan ko'rinish | 3D qurilma holati | Tarif: 1200 so'm/kWh</div>
+      </div>
+      <div class="lamp"><span class="dot" id="statusDot"></span><span id="statusText">Ochiq emas</span></div>
+    </section>
+
+    <section class="main page active" data-page="home">
+      <div class="card">
+        <h3>Qurilma holati</h3>
+        <div class="scene-box">
+          <div id="scene3d"></div>
+          <div class="scene-overlay-top">
+            <span class="scene-title"><i></i>Mini Gidra</span>
+            <span>◴ ⌁ ⌖</span>
+          </div>
+          <div class="scene-bottom">
+            <div>
+              Joriy quvvat:
+              <strong id="scenePower">0.00 kW</strong>
+            </div>
+            <div class="scene-mid">
+              <div class="scene-slider" id="sceneSlider"></div>
+            </div>
+            <div class="right">
+              Tejalgan pul:
+              <strong id="savedMoney">0 so'm</strong>
+            </div>
+          </div>
+          <div class="hint">3D ko‘rinish: rotor + oqim</div>
+          <div class="hud">
+            <div class="pill">Suv oqimi<strong id="hudFlow">58%</strong></div>
+            <div class="pill">Rotor tezligi<strong id="hudRpm">0 rpm</strong></div>
+            <div class="pill">Joriy quvvat<strong id="hudPower">0.00 kW</strong></div>
+          </div>
+        </div>
+        <div class="metrics">
+          <div class="metric"><span>Quvvat</span><strong id="power">0.00 kW</strong></div>
+          <div class="metric"><span>RPM</span><strong id="rpm">0</strong></div>
+          <div class="metric"><span>Kuchlanish</span><strong id="voltage">0 V</strong></div>
+          <div class="metric"><span>Tizim holati</span><strong id="state">TO'XTAGAN</strong></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Boshqaruv</h3>
+        <div class="controls">
+          <div class="row">
+            <label class="label">Klapan ochilishi (suv oqimi)</label>
+            <div class="val" id="flowVal">58%</div>
+          </div>
+          <input id="flow" type="range" min="0" max="100" value="58" />
+
+          <div class="row">
+            <label class="label">Yuklama (iste'mol)</label>
+            <div class="val" id="loadVal">44%</div>
+          </div>
+          <input id="load" type="range" min="10" max="100" value="44" />
+
+          <div class="row">
+            <label class="label">RPM limiti</label>
+            <div class="val" id="rpmLimitVal">1300</div>
+          </div>
+          <input id="rpmLimit" type="range" min="400" max="1800" step="50" value="1300" />
+
+          <div class="btns">
+            <button class="primary" id="startBtn">ISHGA TUSHIRISH</button>
+            <button class="warn" id="autoBtn">AVTO: YOQIQ</button>
+            <button class="danger" id="stopBtn">FAVQULODDA TO'XTATISH</button>
+            <button id="resetBtn">OGOHLANTIRISHNI TOZALASH</button>
+          </div>
+
+          <div class="modes">
+            <button id="ecoBtn">TEJAMKOR</button>
+            <button id="boostBtn">KUCHAYTIRISH</button>
+            <button id="syncBtn">TARMOQ MOSLASH</button>
+            <button id="primeBtn">NASOS TAYYORLASH</button>
+            <button id="lockBtn">MASOFAVIY QULFLASH</button>
+            <button id="nightBtn">TUNGI REJIM</button>
+          </div>
+        </div>
+        <div class="alarm ok" id="alarmBox">Tizim tayyor.</div>
+      </div>
+    </section>
+
+    <section class="card trend page active" data-page="home">
+      <h3>Trend (so'nggi 60 nuqta)</h3>
+      <canvas id="trendCanvas" width="1160" height="170"></canvas>
+      <div class="legend">
+        <span class="chip"><i style="background:#6ec1ff"></i>Quvvat</span>
+        <span class="chip"><i style="background:#4be0a1"></i>RPM/100</span>
+        <span class="chip"><i style="background:#ffca6d"></i>Kuchlanish/10</span>
+      </div>
+    </section>
+
+    <section class="extras page active" data-page="home">
+      <article class="card">
+        <h4>Kunlik hisobot</h4>
+        <div class="line"><span class="muted">Umumiy energiya</span><strong id="dailyEnergy">0.0 kWh</strong></div>
+        <div class="line"><span class="muted">O'rtacha quvvat</span><strong id="avgPower">0.0 kW</strong></div>
+        <div class="line"><span class="muted">Pik quvvat</span><strong id="peakPower">0.0 kW</strong></div>
+      </article>
+      <article class="card">
+        <h4>Qo'shimcha bo'limlar</h4>
+        <div class="line"><span class="muted">Masofadan texnik xizmat</span><strong>Faol</strong></div>
+        <div class="line"><span class="muted">Avto diagnostika</span><strong>Faol</strong></div>
+        <div class="line"><span class="muted">Operator jurnali</span><strong>Yozilmoqda</strong></div>
+      </article>
+      <article class="card">
+        <h4>Tugun holatlari</h4>
+        <div class="line"><span class="muted">Generator</span><strong id="genState">Normal</strong></div>
+        <div class="line"><span class="muted">Nasos</span><strong id="pumpState">Faol</strong></div>
+        <div class="line"><span class="muted">Aloqa moduli</span><strong id="netState">Barqaror</strong></div>
+      </article>
+    </section>
+
+    <section class="card page" data-page="settings">
+      <div class="section-title">Sozlamalar</div>
+      <p class="muted">Panel konfiguratsiyalari va operator boshqaruv sozlamalari.</p>
+      <div class="form-grid">
+        <div class="field">
+          <label>Til</label>
+          <select>
+            <option>O'zbekcha</option>
+            <option>English</option>
+            <option>Русский</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Yangilanish oralig'i</label>
+          <select>
+            <option>0.7 soniya</option>
+            <option>1 soniya</option>
+            <option>2 soniya</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tarif (so'm/kWh)</label>
+          <input type="number" value="1200" />
+        </div>
+        <div class="field">
+          <label>Bildirishnoma rejimi</label>
+          <select>
+            <option>To'liq</option>
+            <option>Faqat ogohlantirishlar</option>
+            <option>Minimal</option>
+          </select>
+        </div>
+      </div>
+      <p class="page-note">Bu bo'lim keyin backend bilan bog'lanishi mumkin.</p>
+    </section>
+
+    <section class="card page" data-page="profile">
+      <div class="section-title">Profil</div>
+      <p class="muted">Operator ma'lumotlari va hisob xavfsizligi.</p>
+      <div class="line"><span class="muted">F.I.Sh</span><strong>Akmal Operator</strong></div>
+      <div class="line"><span class="muted">Lavozim</span><strong>Bosh muhandis</strong></div>
+      <div class="line"><span class="muted">Hudud</span><strong>Toshkent viloyati</strong></div>
+      <div class="line"><span class="muted">Oxirgi kirish</span><strong>Bugun, 10:42</strong></div>
+      <p class="page-note">Profil bo'limiga keyin autentifikatsiya ulab berish mumkin.</p>
+    </section>
+
+    <section class="card page" data-page="sales">
+      <div class="section-title">Sotuv bo'limi</div>
+      <p class="muted">Energiya ishlab chiqarish bo'yicha savdo ko'rsatkichlari.</p>
+      <div class="line"><span class="muted">Bugungi tushum</span><strong id="salesToday">0 so'm</strong></div>
+      <div class="line"><span class="muted">Oylik prognoz</span><strong id="salesForecast">0 so'm</strong></div>
+      <div class="line"><span class="muted">1 kWh narxi</span><strong>1200 so'm</strong></div>
+      <div class="line"><span class="muted">Amalga oshgan savdo</span><strong id="salesEnergy">0.0 kWh</strong></div>
+      <p class="page-note">Sotuv qiymatlari joriy energiya asosida avtomatik yangilanadi.</p>
+    </section>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-target="home">Asosiy</button>
+      <button class="nav-item" data-target="settings">Sozlamalar</button>
+      <button class="nav-item" data-target="profile">Profil</button>
+      <button class="nav-item" data-target="sales">Sotuv</button>
+    </nav>
+  </div>
+
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.162.0/build/three.module.js";
+
+    const flow = document.getElementById("flow");
+    const load = document.getElementById("load");
+    const rpmLimit = document.getElementById("rpmLimit");
+    const flowVal = document.getElementById("flowVal");
+    const loadVal = document.getElementById("loadVal");
+    const rpmLimitVal = document.getElementById("rpmLimitVal");
+    const startBtn = document.getElementById("startBtn");
+    const autoBtn = document.getElementById("autoBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const ecoBtn = document.getElementById("ecoBtn");
+    const boostBtn = document.getElementById("boostBtn");
+    const syncBtn = document.getElementById("syncBtn");
+    const primeBtn = document.getElementById("primeBtn");
+    const lockBtn = document.getElementById("lockBtn");
+    const nightBtn = document.getElementById("nightBtn");
+    const powerEl = document.getElementById("power");
+    const rpmEl = document.getElementById("rpm");
+    const voltageEl = document.getElementById("voltage");
+    const stateEl = document.getElementById("state");
+    const alarmBox = document.getElementById("alarmBox");
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+    const hudFlow = document.getElementById("hudFlow");
+    const hudRpm = document.getElementById("hudRpm");
+    const hudPower = document.getElementById("hudPower");
+    const scenePower = document.getElementById("scenePower");
+    const savedMoney = document.getElementById("savedMoney");
+    const sceneSlider = document.getElementById("sceneSlider");
+    const dailyEnergy = document.getElementById("dailyEnergy");
+    const avgPower = document.getElementById("avgPower");
+    const peakPower = document.getElementById("peakPower");
+    const genState = document.getElementById("genState");
+    const pumpState = document.getElementById("pumpState");
+    const netState = document.getElementById("netState");
+    const sceneHost = document.getElementById("scene3d");
+    const ctx = document.getElementById("trendCanvas").getContext("2d");
+    const pages = document.querySelectorAll(".page");
+    const navItems = document.querySelectorAll(".nav-item");
+    const salesToday = document.getElementById("salesToday");
+    const salesForecast = document.getElementById("salesForecast");
+    const salesEnergy = document.getElementById("salesEnergy");
+
+    const state = {
+      running: true,
+      auto: true,
+      tripped: false,
+      flow: 58,
+      load: 44,
+      rpmLimit: 1300,
+      rpm: 0,
+      power: 0,
+      voltage: 0,
+      remoteLocked: false,
+      totalEnergy: 0,
+      savingsMoney: 0,
+      peak: 0,
+      ticks: 0,
+      avgAccumulator: 0,
+      powerTrend: Array(60).fill(0),
+      rpmTrend: Array(60).fill(0),
+      voltTrend: Array(60).fill(0)
+    };
+    const tariffPerKwh = 1200;
+    const baselinePowerKw = 12;
+    const tickHours = 0.7 / 3600;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0d2238);
+    const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
+    camera.position.set(0, 0.95, 7.8);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    sceneHost.appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0x92c8ff, 0.8));
+    const light = new THREE.DirectionalLight(0xffffff, 1.0);
+    light.position.set(4, 5, 4);
+    scene.add(light);
+
+    const pipeMat = new THREE.MeshStandardMaterial({
+      color: 0x60d5ff,
+      metalness: 0.25,
+      roughness: 0.28,
+      transparent: true,
+      opacity: 0.58
+    });
+    const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.84, 0.84, 7, 40), pipeMat);
+    pipe.rotation.z = Math.PI / 2;
+    pipe.position.y = -0.65;
+    scene.add(pipe);
+
+    const waterMat = new THREE.MeshStandardMaterial({
+      color: 0x39bfff,
+      transparent: true,
+      opacity: 0.72,
+      metalness: 0.05,
+      roughness: 0.2,
+      emissive: 0x0d4f73
+    });
+    const waterCore = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 6.6, 36), waterMat);
+    waterCore.rotation.z = Math.PI / 2;
+    waterCore.position.y = -0.65;
+    scene.add(waterCore);
+
+    const flowCount = 220;
+    const flowData = new Float32Array(flowCount * 3);
+    const flowSpeed = new Float32Array(flowCount);
+    for (let i = 0; i < flowCount; i += 1) {
+      const idx = i * 3;
+      flowData[idx] = Math.random() * 6.2 - 3.1;
+      flowData[idx + 1] = -0.65 + (Math.random() - 0.5) * 0.72;
+      flowData[idx + 2] = (Math.random() - 0.5) * 0.72;
+      flowSpeed[i] = 0.018 + Math.random() * 0.018;
+    }
+    const flowGeo = new THREE.BufferGeometry();
+    flowGeo.setAttribute("position", new THREE.BufferAttribute(flowData, 3));
+    const flowPoints = new THREE.Points(
+      flowGeo,
+      new THREE.PointsMaterial({
+        color: 0xbfeeff,
+        size: 0.055,
+        transparent: true,
+        opacity: 0.92
+      })
+    );
+    scene.add(flowPoints);
+
+    const rotorGroup = new THREE.Group();
+    scene.add(rotorGroup);
+    const outerRing = new THREE.Mesh(
+      new THREE.TorusGeometry(1.25, 0.18, 16, 70),
+      new THREE.MeshStandardMaterial({ color: 0xd9ecff, metalness: 0.6, roughness: 0.3 })
+    );
+    rotorGroup.add(outerRing);
+    const bladeMat = new THREE.MeshStandardMaterial({ color: 0x43bfff, metalness: 0.2, roughness: 0.35 });
+    for (let i = 0; i < 8; i += 1) {
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.2, 0.36), bladeMat);
+      const a = (i / 8) * Math.PI * 2;
+      blade.position.set(Math.cos(a) * 0.75, Math.sin(a) * 0.75, 0.12);
+      blade.rotation.z = a + Math.PI / 4;
+      rotorGroup.add(blade);
+    }
+    const core = new THREE.Mesh(
+      new THREE.SphereGeometry(0.33, 16, 16),
+      new THREE.MeshStandardMaterial({ color: 0xa9d9ff })
+    );
+    rotorGroup.add(core);
+    rotorGroup.position.y = -0.02;
+
+    function resize3d() {
+      const w = sceneHost.clientWidth;
+      const h = sceneHost.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    resize3d();
+    window.addEventListener("resize", resize3d);
+
+    function render3d() {
+      const speed = state.running ? 0.03 + state.rpm / 24000 : 0.002;
+      rotorGroup.rotation.z += speed;
+      rotorGroup.rotation.x = -0.08;
+      rotorGroup.rotation.y = Math.sin(Date.now() * 0.00035) * 0.18;
+      outerRing.material.emissive = new THREE.Color(state.running ? 0x1a5a8f : 0x10263f);
+      core.material.emissive = new THREE.Color(state.running ? 0x225f86 : 0x10263f);
+      pipeMat.emissive = new THREE.Color(state.running ? 0x0d445a : 0x0a2737);
+      waterMat.opacity = state.running ? 0.8 : 0.35;
+      waterMat.emissive = new THREE.Color(state.running ? 0x16709f : 0x0d3249);
+
+      const speedFactor = state.running ? Math.max(0.35, state.flow / 100) : 0.08;
+      const pos = flowGeo.attributes.position.array;
+      for (let i = 0; i < flowCount; i += 1) {
+        const idx = i * 3;
+        pos[idx] += flowSpeed[i] * speedFactor;
+        if (pos[idx] > 3.2) pos[idx] = -3.2;
+        pos[idx + 1] = -0.65 + Math.sin((Date.now() * 0.0012) + i * 0.28) * 0.03 + (pos[idx + 1] + 0.65) * 0.98;
+      }
+      flowGeo.attributes.position.needsUpdate = true;
+      renderer.render(scene, camera);
+      requestAnimationFrame(render3d);
+    }
+    render3d();
+
+    function setAlarm(msg, type) {
+      alarmBox.textContent = msg;
+      alarmBox.className = "alarm " + type;
+    }
+
+    function updateLabels() {
+      flowVal.textContent = Math.round(state.flow) + "%";
+      loadVal.textContent = Math.round(state.load) + "%";
+      rpmLimitVal.textContent = state.rpmLimit;
+      powerEl.textContent = state.power.toFixed(2) + " kW";
+      rpmEl.textContent = Math.round(state.rpm);
+      voltageEl.textContent = Math.round(state.voltage) + " V";
+      stateEl.textContent = state.tripped ? "HIMOYA ISHLAGAN" : state.running ? "ISHLAMOQDA" : "TO'XTAGAN";
+      statusText.textContent = state.tripped ? "OGOHLANTIRISH" : state.running ? "Onlayn" : "Ochiq emas";
+      hudFlow.textContent = Math.round(state.flow) + "%";
+      hudRpm.textContent = Math.round(state.rpm) + " rpm";
+      hudPower.textContent = state.power.toFixed(2) + " kW";
+      scenePower.textContent = state.power.toFixed(2) + " kW";
+      savedMoney.textContent = Math.round(state.savingsMoney).toLocaleString("uz-UZ") + " so'm";
+      sceneSlider.style.setProperty("--scene-level", Math.max(7, Math.min(95, state.flow)) + "%");
+      dailyEnergy.textContent = state.totalEnergy.toFixed(1) + " kWh";
+      avgPower.textContent = (state.ticks ? state.avgAccumulator / state.ticks : 0).toFixed(2) + " kW";
+      peakPower.textContent = state.peak.toFixed(2) + " kW";
+      salesEnergy.textContent = state.totalEnergy.toFixed(2) + " kWh";
+      salesToday.textContent = Math.round(state.totalEnergy * tariffPerKwh).toLocaleString("uz-UZ") + " so'm";
+      salesForecast.textContent = Math.round(state.totalEnergy * tariffPerKwh * 30).toLocaleString("uz-UZ") + " so'm";
+      genState.textContent = state.tripped ? "Xatolik" : "Normal";
+      pumpState.textContent = state.running ? "Faol" : "Kutishda";
+      netState.textContent = state.remoteLocked ? "Cheklangan" : "Barqaror";
+      statusDot.style.background = state.tripped ? "var(--err)" : state.running ? "var(--ok)" : "#5f7080";
+      autoBtn.textContent = "AVTO: " + (state.auto ? "YOQIQ" : "O'CHIQ");
+      lockBtn.textContent = state.remoteLocked ? "QULFNI OCHISH" : "MASOFAVIY QULFLASH";
+
+      const locked = state.remoteLocked;
+      startBtn.disabled = locked || state.running || state.tripped;
+      stopBtn.disabled = locked || (!state.running && !state.tripped);
+      autoBtn.disabled = locked;
+      flow.disabled = locked;
+      load.disabled = locked;
+      rpmLimit.disabled = locked;
+      ecoBtn.disabled = locked;
+      boostBtn.disabled = locked;
+      syncBtn.disabled = locked;
+      primeBtn.disabled = locked;
+      nightBtn.disabled = locked;
+    }
+
+    function computeStep() {
+      if (!state.running) {
+        // Qurilma o'chgan holatda qiymatlar o'zgarmas bo'lishi kerak.
+        state.rpm = 0;
+        state.power = 0;
+        state.voltage = 0;
+        return;
+      }
+
+      if (state.auto) {
+        const target = 62;
+        state.flow = Math.min(100, Math.max(5, state.flow + (target - state.load) * 0.03));
+        flow.value = Math.round(state.flow);
+      }
+
+      const targetRpm = Math.max(0, state.flow * 15 - state.load * 3.4 + (Math.random() - 0.5) * 25);
+      state.rpm += (targetRpm - state.rpm) * 0.2;
+      const eff = Math.max(0.2, 1 - Math.abs(state.load - 58) / 145);
+      state.power = (state.rpm / 1000) * (state.flow / 100) * 2.8 * eff;
+      state.voltage = Math.max(0, state.rpm * 0.24 + 78 + (Math.random() - 0.5) * 4);
+
+      state.totalEnergy += state.power * tickHours;
+      const reducedPower = Math.max(0, baselinePowerKw - state.power);
+      state.savingsMoney += reducedPower * tickHours * tariffPerKwh;
+      state.peak = Math.max(state.peak, state.power);
+      state.avgAccumulator += state.power;
+      state.ticks += 1;
+
+      if (state.rpm > state.rpmLimit) {
+        state.running = false;
+        state.tripped = true;
+        setAlarm("Himoya ishga tushdi: RPM limitdan oshdi.", "err");
+      } else if (state.voltage > 320) {
+        setAlarm("Ogohlantirish: kuchlanish yuqori.", "warn");
+      } else {
+        setAlarm("Tizim normal ishlamoqda.", "ok");
+      }
+    }
+
+    function pushTrend() {
+      state.powerTrend.push(state.power);
+      state.rpmTrend.push(state.rpm / 100);
+      state.voltTrend.push(state.voltage / 10);
+      if (state.powerTrend.length > 60) {
+        state.powerTrend.shift();
+        state.rpmTrend.shift();
+        state.voltTrend.shift();
+      }
+    }
+
+    function drawLine(arr, color, maxY) {
+      const w = ctx.canvas.width;
+      const h = ctx.canvas.height;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      arr.forEach((v, i) => {
+        const x = (i / (arr.length - 1)) * (w - 20) + 10;
+        const y = h - (v / maxY) * (h - 24) - 10;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+
+    function drawTrend() {
+      const w = ctx.canvas.width;
+      const h = ctx.canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      ctx.strokeStyle = "rgba(170,205,240,0.2)";
+      for (let i = 1; i <= 4; i += 1) {
+        const y = (h / 5) * i;
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      }
+      drawLine(state.powerTrend, "#6ec1ff", 18);
+      drawLine(state.rpmTrend, "#4be0a1", 18);
+      drawLine(state.voltTrend, "#ffca6d", 40);
+    }
+
+    flow.addEventListener("input", (e) => { state.flow = Number(e.target.value); updateLabels(); });
+    load.addEventListener("input", (e) => { state.load = Number(e.target.value); updateLabels(); });
+    rpmLimit.addEventListener("input", (e) => { state.rpmLimit = Number(e.target.value); updateLabels(); });
+
+    startBtn.addEventListener("click", () => {
+      if (state.remoteLocked || state.tripped) return;
+      state.running = true;
+      setAlarm("Generator ishga tushdi.", "ok");
+      updateLabels();
+    });
+    autoBtn.addEventListener("click", () => {
+      if (state.remoteLocked) return;
+      state.auto = !state.auto;
+      setAlarm(state.auto ? "Avto rejim yoqildi." : "Avto rejim o'chirildi.", "ok");
+      updateLabels();
+    });
+    stopBtn.addEventListener("click", () => {
+      if (state.remoteLocked) return;
+      state.running = false;
+      state.rpm = 0;
+      state.power = 0;
+      state.voltage = 0;
+      if (!state.tripped) setAlarm("Favqulodda to'xtatish bajarildi.", "warn");
+      updateLabels();
+    });
+    resetBtn.addEventListener("click", () => {
+      state.tripped = false; state.running = false; state.rpm = 0; state.power = 0; state.voltage = 0;
+      setAlarm("Ogohlantirish tozalandi. Tizim tayyor.", "ok");
+      updateLabels();
+    });
+    ecoBtn.addEventListener("click", () => {
+      state.flow = 35; state.load = 30; state.auto = true; flow.value = state.flow; load.value = state.load;
+      setAlarm("Tejamkor rejim yoqildi.", "ok"); updateLabels();
+    });
+    boostBtn.addEventListener("click", () => {
+      state.flow = 82; state.load = 70; state.auto = false; flow.value = state.flow; load.value = state.load;
+      setAlarm("Kuchaytirish rejimi yoqildi.", "warn"); updateLabels();
+    });
+    syncBtn.addEventListener("click", () => {
+      if (!state.running) { setAlarm("Moslash uchun avval ishga tushiring.", "warn"); return; }
+      state.voltage = Math.min(240, Math.max(220, state.voltage));
+      setAlarm("Kuchlanish tarmoq qiymatiga moslandi.", "ok"); updateLabels();
+    });
+    primeBtn.addEventListener("click", () => {
+      state.flow = Math.min(100, state.flow + 12); flow.value = Math.round(state.flow);
+      setAlarm("Nasos tayyorlash bajarildi.", "ok"); updateLabels();
+    });
+    lockBtn.addEventListener("click", () => {
+      state.remoteLocked = !state.remoteLocked;
+      setAlarm(state.remoteLocked ? "Masofaviy qulflash yoqildi." : "Masofaviy qulflash o'chirildi.", "warn");
+      updateLabels();
+    });
+    nightBtn.addEventListener("click", () => {
+      state.flow = 42; state.load = 22; flow.value = state.flow; load.value = state.load;
+      setAlarm("Tungi rejim yoqildi.", "ok"); updateLabels();
+    });
+
+    navItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        const target = item.dataset.target;
+        pages.forEach((page) => {
+          page.classList.toggle("active", page.dataset.page === target);
+        });
+        navItems.forEach((btn) => btn.classList.toggle("active", btn === item));
+      });
+    });
+
+    function tick() {
+      computeStep();
+      pushTrend();
+      drawTrend();
+      updateLabels();
+    }
+
+    setInterval(tick, 700);
+    setAlarm("Tizim avtomatik rejimda ishga tushdi.", "ok");
+    tick();
+  </script>
+</body>
+</html>
