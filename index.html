@@ -425,6 +425,173 @@
       flex-wrap: wrap;
       font-size: 13px;
     }
+    .sales-live {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .sales-live .pill-stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+      background: linear-gradient(180deg, #132d47, #0f2238);
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .sales-live .pill-stat strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 15px;
+      color: var(--text);
+    }
+    .sales-live .pulse-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--ok);
+      margin-right: 6px;
+      animation: pulse-dot 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(54, 207, 141, 0.5); }
+      50% { opacity: 0.75; box-shadow: 0 0 0 6px rgba(54, 207, 141, 0); }
+    }
+    .sales-subnav {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .sales-tab {
+      border: 1px solid #355d80;
+      border-radius: 8px;
+      background: #132d47;
+      color: #b8d9f7;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 0.16s ease, background 0.16s ease;
+    }
+    .sales-tab.active {
+      border-color: #63cbff;
+      background: #1b4b71;
+      color: #f0fbff;
+    }
+    .sales-panel { display: none; }
+    .sales-panel.active { display: block; }
+    .product .stock-tag {
+      font-size: 11px;
+      color: #8fd4ff;
+      margin-top: -4px;
+    }
+    .cart-lines-wrap {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0d2238;
+    }
+    .cart-lines-head {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 8px;
+      padding: 8px 10px;
+      font-size: 11px;
+      color: var(--muted);
+      border-bottom: 1px solid #244767;
+    }
+    .cart-line {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 10px;
+      font-size: 13px;
+      border-bottom: 1px solid #1f3d5c;
+    }
+    .cart-line:last-child { border-bottom: 0; }
+    .qty-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .qty-controls button {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      font-size: 16px;
+      line-height: 1;
+    }
+    .cart-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+    }
+    .cart-actions .ghost {
+      background: #152f4a;
+      border-color: #3a5f82;
+    }
+    .order-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .order-table th, .order-table td {
+      border-bottom: 1px solid #244767;
+      padding: 8px 6px;
+      text-align: left;
+    }
+    .order-table th { color: var(--muted); font-weight: 600; }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge.new { background: #1f4b7a; color: #bfe4ff; }
+    .badge.proc { background: #75501f; color: #ffe6b3; }
+    .badge.done { background: #1a5c45; color: #c6ffe8; }
+    .promo-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .promo-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: #0f2238;
+    }
+    .promo-card h5 { margin-bottom: 6px; }
+    .promo-card .off {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--warn);
+      margin: 6px 0;
+    }
+    .client-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .client-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #0f2238;
+      font-size: 13px;
+    }
+    .client-card strong { display: block; margin-bottom: 4px; }
 
     @media (max-width: 960px) {
       .main { grid-template-columns: 1fr; }
@@ -432,7 +599,12 @@
       .shop-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 700px) {
-      .metrics, .btns, .modes, .hud, .extras, .form-grid, .bottom-nav, .shop-grid { grid-template-columns: 1fr; }
+      .metrics, .btns, .modes, .hud, .extras, .form-grid, .bottom-nav, .shop-grid,
+      .sales-live, .sales-subnav, .promo-cards, .client-grid { grid-template-columns: 1fr; }
+      .cart-lines-head, .cart-line {
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto;
+      }
       .header { flex-direction: column; align-items: flex-start; }
     }
   </style>
@@ -603,40 +775,119 @@
     </section>
 
     <section class="card page" data-page="sales">
-      <div class="section-title">Sotuv bo'limi</div>
-      <p class="muted">Energiya ishlab chiqarish bo'yicha savdo ko'rsatkichlari.</p>
-      <div class="line"><span class="muted">Bugungi tushum</span><strong id="salesToday">0 so'm</strong></div>
-      <div class="line"><span class="muted">Oylik prognoz</span><strong id="salesForecast">0 so'm</strong></div>
-      <div class="line"><span class="muted">1 kWh narxi</span><strong>1200 so'm</strong></div>
-      <div class="line"><span class="muted">Amalga oshgan savdo</span><strong id="salesEnergy">0.0 kWh</strong></div>
-      <div class="shop-grid">
-        <article class="product">
-          <div class="product-image">⚙</div>
-          <h5>Mini Gidra S1</h5>
-          <div class="product-meta"><span>Turi: Standart</span><span>2.5 kW</span></div>
-          <div class="product-price">50 000 so'm</div>
-          <button class="primary add-cart-btn" data-name="Mini Gidra S1" data-price="50000">Savatchaga qo'shish</button>
-        </article>
-        <article class="product">
-          <div class="product-image">🔩</div>
-          <h5>Mini Gidra Pro X</h5>
-          <div class="product-meta"><span>Turi: Professional</span><span>4.0 kW</span></div>
-          <div class="product-price">85 000 so'm</div>
-          <button class="primary add-cart-btn" data-name="Mini Gidra Pro X" data-price="85000">Savatchaga qo'shish</button>
-        </article>
-        <article class="product">
-          <div class="product-image">💧</div>
-          <h5>Mini Gidra Eco</h5>
-          <div class="product-meta"><span>Turi: Tejamkor</span><span>1.8 kW</span></div>
-          <div class="product-price">120 000 so'm</div>
-          <button class="primary add-cart-btn" data-name="Mini Gidra Eco" data-price="120000">Savatchaga qo'shish</button>
-        </article>
+      <div class="section-title">Sotuv markazi</div>
+      <p class="muted">Energiya sotuvi (simulyatsiya) va jihoz buyurtmalari bir joyda.</p>
+
+      <div class="sales-live">
+        <div class="pill-stat"><span class="pulse-dot"></span>Energiya bugun<strong id="salesEnergyRev">0 so'm</strong></div>
+        <div class="pill-stat">Jihozdan tushum<strong id="salesEquipRev">0 so'm</strong></div>
+        <div class="pill-stat">Faol buyurtmalar<strong id="salesActiveOrders">0</strong></div>
+        <div class="pill-stat">Generator ishlab chiqargan<strong id="salesEnergy">0.0 kWh</strong></div>
       </div>
-      <div class="cart-box">
-        <span>Savatcha: <strong id="cartCount">0 ta mahsulot</strong></span>
-        <span>Jami: <strong id="cartTotal">0 so'm</strong></span>
+
+      <div class="line"><span class="muted">Oylik prognoz (energiya)</span><strong id="salesForecast">0 so'm</strong></div>
+      <div class="line"><span class="muted">1 kWh narxi</span><strong id="salesTariffDisplay">1200 so'm</strong></div>
+
+      <nav class="sales-subnav">
+        <button type="button" class="sales-tab active" data-sales-tab="catalog">Katalog</button>
+        <button type="button" class="sales-tab" data-sales-tab="orders">Buyurtmalar</button>
+        <button type="button" class="sales-tab" data-sales-tab="promos">Aksiyalar</button>
+        <button type="button" class="sales-tab" data-sales-tab="clients">Mijozlar</button>
+        <button type="button" class="sales-tab" data-sales-tab="report">Hisobot</button>
+      </nav>
+
+      <div class="sales-panel active" data-sales-panel="catalog">
+        <h3 style="font-size:16px;margin-bottom:8px;">Jihozlar katalogi</h3>
+        <div class="shop-grid">
+          <article class="product">
+            <div class="product-image">⚙</div>
+            <h5>Mini Gidra S1</h5>
+            <div class="product-meta"><span>Standart</span><span>2.5 kW</span></div>
+            <div class="stock-tag">Omborda: <span data-stock-for="s1">24</span> ta</div>
+            <div class="product-price">50 000 so'm</div>
+            <button type="button" class="primary add-cart-btn" data-id="s1" data-name="Mini Gidra S1" data-price="50000">Savatchaga</button>
+          </article>
+          <article class="product">
+            <div class="product-image">🔩</div>
+            <h5>Mini Gidra Pro X</h5>
+            <div class="product-meta"><span>Professional</span><span>4.0 kW</span></div>
+            <div class="stock-tag">Omborda: <span data-stock-for="prox">12</span> ta</div>
+            <div class="product-price">85 000 so'm</div>
+            <button type="button" class="primary add-cart-btn" data-id="prox" data-name="Mini Gidra Pro X" data-price="85000">Savatchaga</button>
+          </article>
+          <article class="product">
+            <div class="product-image">💧</div>
+            <h5>Mini Gidra Eco</h5>
+            <div class="product-meta"><span>Tejamkor</span><span>1.8 kW</span></div>
+            <div class="stock-tag">Omborda: <span data-stock-for="eco">18</span> ta</div>
+            <div class="product-price">120 000 so'm</div>
+            <button type="button" class="primary add-cart-btn" data-id="eco" data-name="Mini Gidra Eco" data-price="120000">Savatchaga</button>
+          </article>
+        </div>
+
+        <div class="cart-lines-wrap">
+          <div class="cart-lines-head">
+            <span>Mahsulot</span><span>Narx</span><span>Miqdor</span><span>Jami</span>
+          </div>
+          <div id="cartLinesEl"></div>
+        </div>
+        <div class="cart-actions">
+          <button type="button" id="checkoutBtn" class="primary">Buyurtma berish</button>
+          <button type="button" id="clearCartBtn" class="ghost">Savatchani tozalash</button>
+          <span>Savatcha: <strong id="cartCount">0 pozitsiya</strong></span>
+          <span>Jami: <strong id="cartTotal">0 so'm</strong></span>
+        </div>
       </div>
-      <p class="page-note">Sotuv qiymatlari joriy energiya asosida avtomatik yangilanadi.</p>
+
+      <div class="sales-panel" data-sales-panel="orders">
+        <h3 style="font-size:16px;margin-bottom:8px;">Buyurtmalar tarixi</h3>
+        <p class="muted" style="font-size:12px;margin-bottom:6px;">Holatlar avtomatik yangilanadi (simulyatsiya).</p>
+        <table class="order-table">
+          <thead><tr><th>ID</th><th>Sana</th><th>Jami</th><th>Holat</th></tr></thead>
+          <tbody id="ordersTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="sales-panel" data-sales-panel="promos">
+        <h3 style="font-size:16px;margin-bottom:8px;">Aksiya va paketlar</h3>
+        <div class="promo-cards">
+          <div class="promo-card">
+            <h5>Oilaviy paket</h5>
+            <div class="off">-12%</div>
+            <p class="muted">Eco + montaj — chegirma mobilo‘raqam orqali.</p>
+          </div>
+          <div class="promo-card">
+            <h5>Fermer liniyasi</h5>
+            <div class="off">-8%</div>
+            <p class="muted">2 ta Pro X — boshlang‘ich to‘lov 30%.</p>
+          </div>
+          <div class="promo-card">
+            <h5>Energiya bonus</h5>
+            <div class="off">+500 kWh</div>
+            <p class="muted">Shartnoma bilan — virtual hisobga bonus.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sales-panel" data-sales-panel="clients">
+        <h3 style="font-size:16px;margin-bottom:8px;">Mijozlar</h3>
+        <div class="client-grid">
+          <div class="client-card"><strong>«Suv Energiya» MCHJ</strong><span class="muted">Buyurtmalar: 6 · Yetkazildi: 4</span></div>
+          <div class="client-card"><strong>Tursunov A.</strong><span class="muted">Telefon: +998 ** *** 12 34</span></div>
+          <div class="client-card"><strong>Qishloq FK</strong><span class="muted">Shartnoma: MG-2026-014</span></div>
+          <div class="client-card"><strong>Texnopark demo</strong><span class="muted">Onlayn savdo · VIP</span></div>
+        </div>
+      </div>
+
+      <div class="sales-panel" data-sales-panel="report">
+        <h3 style="font-size:16px;margin-bottom:8px;">Qisqa hisobot</h3>
+        <div class="line"><span class="muted">Jihoz savdosi (yakunlangan)</span><strong id="reportEquip">0 so'm</strong></div>
+        <div class="line"><span class="muted">Energiya savdosi (simulyatsiya)</span><strong id="reportEnergy">0 so'm</strong></div>
+        <div class="line"><span class="muted">O‘rtacha buyurtma</span><strong id="reportAvgOrder">0 so'm</strong></div>
+        <div class="line"><span class="muted">Oxirgi yangilanish</span><strong id="reportUpdated">—</strong></div>
+      </div>
+
+      <p class="page-note">Energiya summalari generator simulyatsiyasidan keladi; jihoz savdosi brauzerda saqlanadi (localStorage).</p>
     </section>
 
     <nav class="bottom-nav">
@@ -712,12 +963,24 @@
     const ctx = document.getElementById("trendCanvas").getContext("2d");
     const pages = document.querySelectorAll(".page");
     const navItems = document.querySelectorAll(".nav-item");
-    const salesToday = document.getElementById("salesToday");
     const salesForecast = document.getElementById("salesForecast");
     const salesEnergy = document.getElementById("salesEnergy");
-    const addCartButtons = document.querySelectorAll(".add-cart-btn");
+    const salesEnergyRev = document.getElementById("salesEnergyRev");
+    const salesEquipRev = document.getElementById("salesEquipRev");
+    const salesActiveOrders = document.getElementById("salesActiveOrders");
+    const salesTariffDisplay = document.getElementById("salesTariffDisplay");
+    const cartLinesEl = document.getElementById("cartLinesEl");
     const cartCount = document.getElementById("cartCount");
     const cartTotal = document.getElementById("cartTotal");
+    const checkoutBtn = document.getElementById("checkoutBtn");
+    const clearCartBtn = document.getElementById("clearCartBtn");
+    const ordersTableBody = document.getElementById("ordersTableBody");
+    const reportEquip = document.getElementById("reportEquip");
+    const reportEnergy = document.getElementById("reportEnergy");
+    const reportAvgOrder = document.getElementById("reportAvgOrder");
+    const reportUpdated = document.getElementById("reportUpdated");
+    const salesTabs = document.querySelectorAll(".sales-tab");
+    const salesPanels = document.querySelectorAll(".sales-panel");
 
     const state = {
       running: true,
@@ -742,10 +1005,279 @@
     const tariffPerKwh = 1200;
     const baselinePowerKw = 12;
     const tickHours = 0.7 / 3600;
-    const cart = {
-      count: 0,
-      total: 0
-    };
+
+    const LS_CART = "minigidra_cart_v1";
+    const LS_ORDERS = "minigidra_orders_v1";
+    const LS_STOCK = "minigidra_stock_v1";
+    const ORDER_STATUS_CHAIN = ["new", "prep", "ship", "done"];
+
+    let cartLines = [];
+    let orders = [];
+    let stockMap = { s1: 24, prox: 12, eco: 18 };
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function persistCart() {
+      localStorage.setItem(LS_CART, JSON.stringify(cartLines));
+    }
+
+    function persistOrders() {
+      localStorage.setItem(LS_ORDERS, JSON.stringify(orders));
+    }
+
+    function persistStock() {
+      localStorage.setItem(LS_STOCK, JSON.stringify(stockMap));
+    }
+
+    function seedOrdersIfEmpty() {
+      if (orders.length > 0) return;
+      const t = Date.now();
+      orders = [
+        {
+          id: "MG-20260422-9081",
+          created: t - 86400000,
+          total: 170000,
+          status: "done",
+          items: [{ name: "Mini Gidra Pro X", qty: 2, unitPrice: 85000 }]
+        },
+        {
+          id: "MG-20260423-4412",
+          created: t - 2100000,
+          total: 120000,
+          status: "prep",
+          items: [{ name: "Mini Gidra Eco", qty: 1, unitPrice: 120000 }]
+        },
+        {
+          id: "MG-20260423-7730",
+          created: t - 420000,
+          total: 50000,
+          status: "new",
+          items: [{ name: "Mini Gidra S1", qty: 1, unitPrice: 50000 }]
+        }
+      ];
+      persistOrders();
+    }
+
+    function loadSalesData() {
+      try {
+        cartLines = JSON.parse(localStorage.getItem(LS_CART) || "[]");
+        if (!Array.isArray(cartLines)) cartLines = [];
+      } catch {
+        cartLines = [];
+      }
+      try {
+        orders = JSON.parse(localStorage.getItem(LS_ORDERS) || "[]");
+        if (!Array.isArray(orders)) orders = [];
+      } catch {
+        orders = [];
+      }
+      seedOrdersIfEmpty();
+      try {
+        const st = JSON.parse(localStorage.getItem(LS_STOCK) || "{}");
+        if (st && typeof st === "object") stockMap = { ...stockMap, ...st };
+      } catch {
+        /* ignore */
+      }
+      persistStock();
+      syncStockLabels();
+    }
+
+    function syncStockLabels() {
+      document.querySelectorAll("[data-stock-for]").forEach((el) => {
+        const id = el.getAttribute("data-stock-for");
+        el.textContent = String(stockMap[id] ?? 0);
+      });
+    }
+
+    function cartTotals() {
+      let qtySum = 0;
+      let sum = 0;
+      cartLines.forEach((l) => {
+        qtySum += l.qty;
+        sum += l.qty * l.price;
+      });
+      return { qtySum, sum, positions: cartLines.length };
+    }
+
+    function equipmentRevenueDone() {
+      return orders.filter((o) => o.status === "done").reduce((s, o) => s + o.total, 0);
+    }
+
+    function activeOrdersCount() {
+      return orders.filter((o) => o.status !== "done").length;
+    }
+
+    function averageDoneOrder() {
+      const done = orders.filter((o) => o.status === "done");
+      if (!done.length) return 0;
+      return done.reduce((s, o) => s + o.total, 0) / done.length;
+    }
+
+    function orderStatusUz(st) {
+      const map = { new: "Yangi", prep: "Tayyorlanmoqda", ship: "Yo'lda", done: "Yetkazildi" };
+      return map[st] || st;
+    }
+
+    function orderBadgeClass(st) {
+      if (st === "new") return "new";
+      if (st === "done") return "done";
+      return "proc";
+    }
+
+    function renderOrdersTable() {
+      if (!ordersTableBody) return;
+      const rows = [...orders].sort((a, b) => b.created - a.created);
+      ordersTableBody.innerHTML = rows
+        .map((o) => {
+          const d = new Date(o.created);
+          const ds = d.toLocaleString("uz-UZ", { dateStyle: "short", timeStyle: "short" });
+          return (
+            "<tr><td>" +
+            escapeHtml(o.id) +
+            "</td><td>" +
+            ds +
+            "</td><td>" +
+            Math.round(o.total).toLocaleString("uz-UZ") +
+            " so'm</td><td><span class=\"badge " +
+            orderBadgeClass(o.status) +
+            "\">" +
+            orderStatusUz(o.status) +
+            "</span></td></tr>"
+          );
+        })
+        .join("");
+    }
+
+    function renderCartLines() {
+      if (!cartLinesEl) return;
+      if (!cartLines.length) {
+        cartLinesEl.innerHTML =
+          '<div style="padding:12px;color:var(--muted);font-size:13px;">Savatcha bo‘sh.</div>';
+        updateCartUi();
+        return;
+      }
+      cartLinesEl.innerHTML = cartLines
+        .map((l) => {
+          const lineTotal = l.qty * l.price;
+          return (
+            '<div class="cart-line" data-line-id="' +
+            escapeHtml(l.id) +
+            '"><span>' +
+            escapeHtml(l.name) +
+            '</span><span>' +
+            l.price.toLocaleString("uz-UZ") +
+            ' so\'m</span><span class="qty-controls"><button type="button" data-cart-act="dec" data-id="' +
+            escapeHtml(l.id) +
+            '">−</button> ' +
+            l.qty +
+            ' <button type="button" data-cart-act="inc" data-id="' +
+            escapeHtml(l.id) +
+            '">+</button></span><span>' +
+            lineTotal.toLocaleString("uz-UZ") +
+            " so'm</span></div>"
+          );
+        })
+        .join("");
+      updateCartUi();
+    }
+
+    function addOrIncLine(productId, name, price) {
+      const avail = stockMap[productId] ?? 0;
+      const existing = cartLines.find((l) => l.id === productId);
+      const inCart = existing ? existing.qty : 0;
+      if (inCart >= avail) {
+        setAlarm("Omborda yetarli mahsulot yo'q.", "warn");
+        return;
+      }
+      if (existing) existing.qty += 1;
+      else cartLines.push({ id: productId, name: name, price: price, qty: 1 });
+      persistCart();
+      renderCartLines();
+      setAlarm(name + " savatchaga qo'shildi.", "ok");
+    }
+
+    function changeQty(productId, delta) {
+      const line = cartLines.find((l) => l.id === productId);
+      if (!line) return;
+      const avail = stockMap[productId] ?? 0;
+      if (delta > 0 && line.qty >= avail) {
+        setAlarm("Omborda limit tugadi.", "warn");
+        return;
+      }
+      line.qty += delta;
+      if (line.qty <= 0) cartLines = cartLines.filter((l) => l.id !== productId);
+      persistCart();
+      renderCartLines();
+    }
+
+    function clearCart() {
+      cartLines = [];
+      persistCart();
+      renderCartLines();
+      setAlarm("Savatcha tozalandi.", "warn");
+    }
+
+    function checkout() {
+      if (!cartLines.length) {
+        setAlarm("Savatcha bo'sh.", "warn");
+        return;
+      }
+      for (let i = 0; i < cartLines.length; i += 1) {
+        const l = cartLines[i];
+        const avail = stockMap[l.id] ?? 0;
+        if (l.qty > avail) {
+          setAlarm("Omborda yetarli emas: " + l.name, "err");
+          return;
+        }
+      }
+      let orderTotal = 0;
+      const items = cartLines.map((l) => {
+        orderTotal += l.qty * l.price;
+        return { name: l.name, qty: l.qty, unitPrice: l.price };
+      });
+      cartLines.forEach((l) => {
+        stockMap[l.id] = (stockMap[l.id] ?? 0) - l.qty;
+      });
+      persistStock();
+      syncStockLabels();
+      const now = new Date();
+      const id =
+        "MG-" +
+        String(now.getFullYear()) +
+        String(now.getMonth() + 1).padStart(2, "0") +
+        String(now.getDate()).padStart(2, "0") +
+        "-" +
+        String(Math.floor(1000 + Math.random() * 9000));
+      orders.push({
+        id: id,
+        created: Date.now(),
+        total: orderTotal,
+        status: "new",
+        items: items
+      });
+      persistOrders();
+      cartLines = [];
+      persistCart();
+      renderCartLines();
+      renderOrdersTable();
+      setAlarm("Buyurtma qabul qilindi: " + id, "ok");
+    }
+
+    function advanceOneOrder() {
+      const pending = orders.filter((o) => o.status !== "done");
+      if (!pending.length) return;
+      const pick = pending[Math.floor(Math.random() * pending.length)];
+      const idx = ORDER_STATUS_CHAIN.indexOf(pick.status);
+      if (idx < 0 || idx >= ORDER_STATUS_CHAIN.length - 1) return;
+      pick.status = ORDER_STATUS_CHAIN[idx + 1];
+      persistOrders();
+      renderOrdersTable();
+    }
 
     if (THREE) {
     const scene = new THREE.Scene();
@@ -915,8 +1447,22 @@
       avgPower.textContent = (state.ticks ? state.avgAccumulator / state.ticks : 0).toFixed(2) + " kW";
       peakPower.textContent = state.peak.toFixed(2) + " kW";
       salesEnergy.textContent = state.totalEnergy.toFixed(2) + " kWh";
-      salesToday.textContent = Math.round(state.totalEnergy * tariffPerKwh).toLocaleString("uz-UZ") + " so'm";
+      const energyRev = Math.round(state.totalEnergy * tariffPerKwh);
+      salesEnergyRev.textContent = energyRev.toLocaleString("uz-UZ") + " so'm";
       salesForecast.textContent = Math.round(state.totalEnergy * tariffPerKwh * 30).toLocaleString("uz-UZ") + " so'm";
+      salesEquipRev.textContent = Math.round(equipmentRevenueDone()).toLocaleString("uz-UZ") + " so'm";
+      salesActiveOrders.textContent = String(activeOrdersCount());
+      if (salesTariffDisplay) {
+        salesTariffDisplay.textContent = tariffPerKwh.toLocaleString("uz-UZ") + " so'm/kWh";
+      }
+      if (reportEquip) reportEquip.textContent = Math.round(equipmentRevenueDone()).toLocaleString("uz-UZ") + " so'm";
+      if (reportEnergy) reportEnergy.textContent = energyRev.toLocaleString("uz-UZ") + " so'm";
+      if (reportAvgOrder) {
+        reportAvgOrder.textContent = Math.round(averageDoneOrder()).toLocaleString("uz-UZ") + " so'm";
+      }
+      if (reportUpdated) {
+        reportUpdated.textContent = new Date().toLocaleString("uz-UZ", { dateStyle: "short", timeStyle: "medium" });
+      }
       genState.textContent = state.tripped ? "Xatolik" : "Normal";
       pumpState.textContent = state.running ? "Faol" : "Kutishda";
       netState.textContent = state.remoteLocked ? "Cheklangan" : "Barqaror";
@@ -938,8 +1484,9 @@
       nightBtn.disabled = locked;
     }
     function updateCartUi() {
-      cartCount.textContent = cart.count + " ta mahsulot";
-      cartTotal.textContent = Math.round(cart.total).toLocaleString("uz-UZ") + " so'm";
+      const t = cartTotals();
+      cartCount.textContent = t.positions + " pozitsiya (" + t.qtySum + " ta)";
+      cartTotal.textContent = Math.round(t.sum).toLocaleString("uz-UZ") + " so'm";
     }
 
     function computeStep() {
@@ -1089,16 +1636,38 @@
         }
       });
     });
-    addCartButtons.forEach((btn) => {
+    document.querySelectorAll(".add-cart-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const name = btn.dataset.name;
-        const price = Number(btn.dataset.price);
-        cart.count += 1;
-        cart.total += price;
-        updateCartUi();
-        setAlarm(name + " savatchaga qo'shildi.", "ok");
+        addOrIncLine(btn.dataset.id, btn.dataset.name, Number(btn.dataset.price));
       });
     });
+
+    if (cartLinesEl) {
+      cartLinesEl.addEventListener("click", (e) => {
+        const actBtn = e.target.closest("[data-cart-act]");
+        if (!actBtn) return;
+        const id = actBtn.getAttribute("data-id");
+        const act = actBtn.getAttribute("data-cart-act");
+        if (act === "inc") changeQty(id, 1);
+        else if (act === "dec") changeQty(id, -1);
+      });
+    }
+
+    if (checkoutBtn) checkoutBtn.addEventListener("click", checkout);
+    if (clearCartBtn) clearCartBtn.addEventListener("click", clearCart);
+
+    salesTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const key = tab.dataset.salesTab;
+        salesTabs.forEach((t) => t.classList.toggle("active", t === tab));
+        salesPanels.forEach((p) => p.classList.toggle("active", p.dataset.salesPanel === key));
+      });
+    });
+
+    loadSalesData();
+    renderOrdersTable();
+    renderCartLines();
+    setInterval(advanceOneOrder, 6500);
 
     function tick() {
       computeStep();
@@ -1109,7 +1678,6 @@
 
     setInterval(tick, 700);
     setAlarm("Tizim avtomatik rejimda ishga tushdi.", "ok");
-    updateCartUi();
     tick();
     })();
     </script>
