@@ -70,7 +70,29 @@
       overflow: hidden;
       margin-bottom: 10px;
     }
-    #scene3d { position: absolute; inset: 0; }
+    #scene3d {
+      position: absolute;
+      inset: 0;
+      min-height: 1px;
+    }
+    #scene3d canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .three-fallback {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      background: rgba(9, 22, 37, 0.88);
+      z-index: 2;
+    }
     .hud {
       position: absolute;
       left: 8px;
@@ -626,7 +648,23 @@
   </div>
 
   <script type="module">
-    import * as THREE from "https://unpkg.com/three@0.162.0/build/three.module.js";
+    (async () => {
+    async function loadThreeModule() {
+      const urls = [
+        "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+        "https://unpkg.com/three@0.162.0/build/three.module.js"
+      ];
+      for (const url of urls) {
+        try {
+          return await import(url);
+        } catch (e) {
+          console.warn("THREE import failed:", url, e);
+        }
+      }
+      return null;
+    }
+
+    const THREE = await loadThreeModule();
 
     const flow = document.getElementById("flow");
     const load = document.getElementById("load");
@@ -664,6 +702,13 @@
     const pumpState = document.getElementById("pumpState");
     const netState = document.getElementById("netState");
     const sceneHost = document.getElementById("scene3d");
+    let resize3d = () => {};
+
+    if (!THREE) {
+      sceneHost.innerHTML =
+        '<div class="three-fallback">3D ko‘rinish yuklanmadi. Internetni yoki CDN bloklovini tekshiring.</div>';
+    }
+
     const ctx = document.getElementById("trendCanvas").getContext("2d");
     const pages = document.querySelectorAll(".page");
     const navItems = document.querySelectorAll(".nav-item");
@@ -702,13 +747,29 @@
       total: 0
     };
 
+    if (THREE) {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0d2238);
     const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
     camera.position.set(0, 0.95, 7.8);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: false,
+        powerPreference: "high-performance"
+      });
+    } catch (e) {
+      sceneHost.innerHTML =
+        '<div class="three-fallback">Brauzer WebGL ni qo‘llab-quvvatlamayapti yoki o‘chirilgan.</div>';
+      console.error(e);
+    }
+    if (renderer) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     sceneHost.appendChild(renderer.domElement);
+    renderer.domElement.style.width = "100%";
+    renderer.domElement.style.height = "100%";
+    renderer.domElement.style.display = "block";
 
     scene.add(new THREE.AmbientLight(0x92c8ff, 0.8));
     const light = new THREE.DirectionalLight(0xffffff, 1.0);
@@ -785,15 +846,23 @@
     rotorGroup.add(core);
     rotorGroup.position.y = -0.02;
 
-    function resize3d() {
-      const w = sceneHost.clientWidth;
-      const h = sceneHost.clientHeight;
+    resize3d = function () {
+      const box = sceneHost.closest(".scene-box");
+      const w = Math.max(1, sceneHost.clientWidth || (box ? box.clientWidth : 300));
+      const h = Math.max(1, sceneHost.clientHeight || (box ? box.clientHeight : 300));
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
-    }
+    };
     resize3d();
     window.addEventListener("resize", resize3d);
+    window.addEventListener("load", () => requestAnimationFrame(() => resize3d()));
+    if (typeof ResizeObserver !== "undefined") {
+      const ro = new ResizeObserver(() => requestAnimationFrame(() => resize3d()));
+      ro.observe(sceneHost);
+      const box = sceneHost.closest(".scene-box");
+      if (box) ro.observe(box);
+    }
 
     function render3d() {
       const speed = state.running ? 0.03 + state.rpm / 24000 : 0.002;
@@ -819,6 +888,8 @@
       requestAnimationFrame(render3d);
     }
     render3d();
+    }
+    }
 
     function setAlarm(msg, type) {
       alarmBox.textContent = msg;
@@ -1013,6 +1084,9 @@
           page.classList.toggle("active", page.dataset.page === target);
         });
         navItems.forEach((btn) => btn.classList.toggle("active", btn === item));
+        if (target === "home") {
+          requestAnimationFrame(() => resize3d());
+        }
       });
     });
     addCartButtons.forEach((btn) => {
@@ -1036,7 +1110,8 @@
     setInterval(tick, 700);
     setAlarm("Tizim avtomatik rejimda ishga tushdi.", "ok");
     updateCartUi();
-git     tick();
-  </script>
+    tick();
+    })();
+    </script>
 </body>
 </html>
