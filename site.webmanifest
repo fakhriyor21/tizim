@@ -1,0 +1,12 @@
+{
+  "name": "Mini Gidra — boshqaruv paneli",
+  "short_name": "Mini Gidra",
+  "description": "Gidro mini-stansiya monitoring va boshqaruv paneli",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a1a2d",
+  "theme_color": "#0a1a2d",
+  "lang": "uz"
+}
